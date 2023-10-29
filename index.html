@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <title>Cliente RESTful</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+    </head>
+    <body>
+        <h1>Notificações do Servidor</h1>
+        <ul id="notification-list"></ul>
+
+        <h2>Cadastro de Usuário</h2>
+        <form id="user-registration-form">
+            <input type="text" id="user-name" placeholder="Nome do usuário" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <h2>Clientes Cadastrados</h2>
+        <ul id="client-list"></ul>
+
+        <script>
+            const eventSource = new EventSource('http://127.0.0.1:5000/');
+
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data.type === 'notification') {
+                    // Notificação do servidor
+                    const notification = data.message;
+                    console.log('Notificação do servidor:', notification);
+
+                    const notificationList = document.getElementById('notification-list');
+                    const listItem = document.createElement('li');
+                    listItem.textContent = notification;
+                    notificationList.appendChild(listItem);
+                } else if (data.type === 'clientsUpdate') {
+                    // Atualização da lista de clientes
+                    const clients = data.clients;
+                    const clientList = document.getElementById('client-list');
+                    clientList.innerHTML = ''; // Limpar a lista existente
+
+                    clients.forEach((client) => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = client;
+                        clientList.appendChild(listItem);
+                    });
+                }
+            };
+
+            const userRegistrationForm = document.getElementById('user-registration-form');
+            
+            userRegistrationForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const userNameInput = document.getElementById('user-name');
+                const userName = userNameInput.value;
+
+                // Enviar solicitação de registro de usuário para o servidor
+                fetch('http://127.0.0.1:5000/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: userName }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data.message);
+                    userNameInput.value = ''; // Limpar o campo de entrada após o registro
+                })
+                .catch((error) => {
+                    console.error('Erro no registro de usuário:', error);
+                });
+            });
+
+
+            // Função para buscar a lista de clientes do servidor
+            function fetchClientList() {
+                fetch('http://127.0.0.1:5000/api/clients', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    const clientList = document.getElementById('client-list');
+                    clientList.innerHTML = ''; // Limpar a lista existente
+
+                    data.forEach((client) => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = client;
+                        clientList.appendChild(listItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Erro ao buscar a lista de clientes:', error);
+                });
+            }
+
+            // Chame a função para buscar a lista de clientes assim que a página for carregada
+            fetchClientList();
+        </script>
+    </body>
+</html>
