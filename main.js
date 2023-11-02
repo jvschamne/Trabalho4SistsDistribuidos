@@ -26,7 +26,6 @@ eventSource.onmessage = (event) => {
 };
 
 const userRegistrationForm = document.getElementById('user-registration-form');
-
 userRegistrationForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const userNameInput = document.getElementById('user-name');
@@ -45,6 +44,8 @@ userRegistrationForm.addEventListener('submit', (event) => {
         console.log(data.message);
         userNameInput.value = ''; // Limpar o campo de entrada após o registro
         userRegistrationForm.style.display = "none";
+
+        productRegistrationForm.style.display = "flex";
     })
     .catch((error) => {
         console.error('Erro no registro de usuário:', error);
@@ -79,7 +80,6 @@ function fetchClientList() {
 fetchClientList();
 
 const productRegistrationForm = document.getElementById('product-registration-form');
-
 productRegistrationForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -239,6 +239,41 @@ function addProductToTable(product) {
     
     
 }
+
+
+const registerProductButton = document.getElementById('add_product_button');
+registerProductButton.addEventListener('click', () => {
+    if (productRegistrationForm.style.display === 'none') {
+        productRegistrationForm.style.display = 'flex';
+    } else {
+        productRegistrationForm.style.display = 'none';
+    }
+})
+
+
+const relatorio_popup = document.getElementById('relatorio');
+const relatorioButton = document.getElementById('relatorio_button');
+
+relatorioButton.addEventListener('click', () => {
+    if (relatorio_popup.style.display === 'none') {
+        relatorio_popup.style.display = 'flex';
+    } else {
+        relatorio_popup.style.display = 'none';
+    }
+})
+
+
+const tabelaProdutos = document.getElementById('tabela-produtos')
+const tabelaButton = document.getElementById('table_button')
+
+tabelaButton.addEventListener('click', () => {
+    if (tabelaProdutos.style.display === 'none') {
+        tabelaProdutos.style.removeProperty('display');
+    } else {
+        tabelaProdutos.style.display = 'none';
+    }
+})
+
 
 
 // Função para buscar a lista de produtos do servidor

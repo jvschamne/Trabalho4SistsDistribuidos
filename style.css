@@ -4,20 +4,6 @@
     box-sizing: border-box;
 }
 
-form {
-    margin-bottom: 5vh;
-    margin-top: 5vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-#tabela-produtos {
-    margin-top: 5vh;
-    border: 2px solid black; /* Adiciona uma borda preta à tabela */
-}
-
 body {
     display: flex;
     flex-direction: column;
@@ -32,10 +18,22 @@ body {
     background-color: red;
 }
 
+form {
+    margin: 5vh 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#tabela-produtos {
+    margin-top: 5vh;
+    border: 2px solid black;
+}
+
 table {
     width: 100%;
-    border-spacing: 10px;
-    word-break: break-all;
+    border-spacing: 0; /* Remova o espaçamento entre as células */
     border-collapse: collapse;
 }
 
@@ -43,30 +41,22 @@ thead {
     background-color: whitesmoke;
 }
 
-tr {
-    border-bottom: 1px solid rgb(238, 235, 235)!important;
-}
-
-tbody tr td {
-    vertical-align: text-top;
-    padding: 6px;
-    max-width: 50px;
-    border: 1px solid black; /* Adiciona uma borda preta às células */
-}
-
-
-
 thead tr th {
     padding: 5px;
-    text-align: start;
-    margin-bottom: 50px;
-    border: 1px solid black; /* Adiciona uma borda preta às células do cabeçalho */
+    text-align: left; /* Ajuste a alinhamento do texto no cabeçalho */
+    border: 1px solid black;
 }
 
 tbody tr {
-    margin-bottom: 50px;
+    border-bottom: 1px solid rgb(238, 235, 235);
 }
 
-th, tr, td{
-    width: 10px !important;
+tbody tr td {
+    padding: 6px;
+    max-width: 150px; /* Aumente a largura máxima para a descrição e outras células */
+    border: 1px solid black;
+}
+
+th, tr, td {
+    width: auto; /* Remova a largura fixa para todas as células */
 }
