@@ -148,11 +148,10 @@ function addProductToTable(product) {
     // Coluna do Produto
     const productCell = newRow.insertCell(1);
     productCell.textContent = product.name;
-    // Coluna do Estoque Mínimo (definido como 0 neste exemplo)
-
+    // Coluna da Descrição
     const descriptionCell = newRow.insertCell(2);
     descriptionCell.textContent = product.description;
-
+    // Coluna do Estoque Mínimo
     const minStockCell = newRow.insertCell(3);
     minStockCell.textContent = product.minStock;
     // Coluna do Preço
@@ -163,26 +162,32 @@ function addProductToTable(product) {
     const quantityInput = document.createElement('input');
     quantityInput.type = 'number';
     quantityInput.min = 0;
+    quantityInput.value = 0; // Defina o valor inicial como 0
     quantityCell.appendChild(quantityInput);
+
     // Coluna das Ações
-    const actionsCellIncrease = newRow.insertCell(6);
-    const increaseButton = document.createElement('button');
-    increaseButton.textContent = 'Aumentar';
-    actionsCellIncrease.appendChild(increaseButton);
-    const actionsCellDecrease = newRow.insertCell(7);
-    const decreaseButton = document.createElement('button');
-    decreaseButton.textContent = 'Diminuir';
-    actionsCellDecrease.appendChild(decreaseButton);
-    // Manipuladores de eventos para os botões de aumento e diminuição
-    increaseButton.addEventListener('click', () => {
-        // Implemente a lógica para aumentar a quantidade do produto aqui
-        // Você pode usar quantityInput.value para obter a quantidade
+    const actionsCell = newRow.insertCell(6);
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Adicionar';
+    const subtractButton = document.createElement('button');
+    subtractButton.textContent = 'Subtrair';
+    actionsCell.appendChild(quantityInput);
+    actionsCell.appendChild(addButton);
+    actionsCell.appendChild(subtractButton);
+
+    // Manipuladores de eventos para os botões de adicionar e subtrair
+    addButton.addEventListener('click', () => {
+        // Implemente a lógica para adicionar itens aqui
+        const quantityToAdd = parseInt(quantityInput.value, 10);
+        // Atualize a exibição da quantidade atual (você precisa implementar a lógica)
     });
-    decreaseButton.addEventListener('click', () => {
-        // Implemente a lógica para diminuir a quantidade do produto aqui
-        // Você pode usar quantityInput.value para obter a quantidade
+    subtractButton.addEventListener('click', () => {
+        // Implemente a lógica para subtrair itens aqui
+        const quantityToSubtract = parseInt(quantityInput.value, 10);
+        // Atualize a exibição da quantidade atual (você precisa implementar a lógica)
     });
 }
+
 
 // Função para buscar a lista de produtos do servidor
 function fetchProductList() {
