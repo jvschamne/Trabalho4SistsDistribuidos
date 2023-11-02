@@ -1,0 +1,72 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+form {
+    margin-bottom: 5vh;
+    margin-top: 5vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#tabela-produtos {
+    margin-top: 5vh;
+    border: 2px solid black; /* Adiciona uma borda preta à tabela */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    margin-top: 20vh;
+    width: 80vw;
+    height: 50vh;
+    background-color: red;
+}
+
+table {
+    width: 100%;
+    border-spacing: 10px;
+    word-break: break-all;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: whitesmoke;
+}
+
+tr {
+    border-bottom: 1px solid rgb(238, 235, 235)!important;
+}
+
+tbody tr td {
+    vertical-align: text-top;
+    padding: 6px;
+    max-width: 50px;
+    border: 1px solid black; /* Adiciona uma borda preta às células */
+}
+
+
+
+thead tr th {
+    padding: 5px;
+    text-align: start;
+    margin-bottom: 50px;
+    border: 1px solid black; /* Adiciona uma borda preta às células do cabeçalho */
+}
+
+tbody tr {
+    margin-bottom: 50px;
+}
+
+th, tr, td{
+    width: 10px !important;
+}
