@@ -275,6 +275,60 @@ tabelaButton.addEventListener('click', () => {
 })
 
 
+// Seleciona o formulário do relatório
+const relatorioForm = document.getElementById('relatorio-form');
+
+relatorioForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const minutesInput = document.getElementById('minutes');
+    const minutes = parseInt(minutesInput.value, 10);
+
+    // Verifique se os minutos são válidos
+    if (!isNaN(minutes) && minutes >= 0) {
+        // Enviar solicitação de relatório para o servidor
+        fetch(`http://127.0.0.1:5000/api/reports/movements/${minutes}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            const reportTable = document.getElementById('report-table');
+            const reportBody = document.getElementById('report-body');
+        
+            // Limpar o conteúdo da tabela antes de adicionar os novos dados
+            reportBody.innerHTML = '';
+        
+            data.forEach((productInfo) => {
+                const row = reportTable.insertRow();
+                row.innerHTML = `
+                    <td>${productInfo.code}</td>
+                    <td>${productInfo.name}</td>
+                    <td>
+                        <ul>
+                            ${productInfo.movements.map((movement) => `
+                                <li>${movement.type}: ${movement.quantity} (${new Date(movement.time).toLocaleString()})</li>
+                            `).join('')}
+                        </ul>
+                    </td>
+                `;
+            });
+        
+            // Exibir o relatório
+            reportTable.style.removeProperty('display');
+            console.log('Relatório de Movimentos:', data);
+        })
+        
+        .catch((error) => {
+            console.error('Erro ao buscar o relatório:', error);
+        });
+    } else {
+        alert('Por favor, insira um valor válido para os minutos.');
+    }
+});
+
+
 
 // Função para buscar a lista de produtos do servidor
 function fetchProductList() {

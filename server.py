@@ -151,8 +151,7 @@ def record_exit(productId):
 
     return jsonify({"message": response})
 
-
-
+ 
 @app.route('/api/products', methods=['GET'])
 def get_products():
     product_list = []
@@ -169,6 +168,33 @@ def get_users():
         username_list.append(user)
 
     return jsonify(username_list)
+
+
+@app.route('/api/reports/movements/<int:date>', methods=['GET'])
+def get_movement_reports(date):
+    current_time = datetime.datetime.now()
+    time = current_time - datetime.timedelta(minutes=date)
+
+    fluxoMov = []
+    for product in products.values():
+
+        product_info = {
+             "code": product.code,
+             "name": product.name,
+             "movements": []
+        }
+
+         # Filtrar os movimentos que ocorreram até 2 minutos atrás
+        for movement_time, movement_type, movement_quantity in product.movements:
+                 if movement_time >= time:
+                    product_info["movements"].append({
+                         "time": movement_time,
+                         "type": movement_type,
+                        "quantity": movement_quantity
+                            })
+
+        fluxoMov.append(product_info)
+    return jsonify(fluxoMov)
 
 
 
