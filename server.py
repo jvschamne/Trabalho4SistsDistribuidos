@@ -16,13 +16,13 @@ notifications = []
 
 # Representa o produto
 class Product:
-    def __init__(self, code, name, description, quantity, price, min_stock):
+    def __init__(self, code, name, description, quantity, price, minStock):
             self.code = code
             self.name = name
             self.description = description
             self.quantity = quantity
             self.price = price
-            self.min_stock = min_stock
+            self.minStock = minStock
             self.movements = []
 
     def add_entry(self, quantity):
@@ -41,7 +41,7 @@ class Product:
                 "description": self.description,
                 "quantity": self.quantity,
                 "price": self.price,
-                "min_stock": self.min_stock,
+                "minStock": self.minStock,
             }
 
 # Classe que representa um usuário do sistema
@@ -97,19 +97,23 @@ def register_product():
     data = request.json
     data = data["data"]
     code = data.get('code')
-    name = data.get('name')
-    description = data.get('description')
-    price = data.get('price')
-    min_stock = data.get('min_stock')
 
-    # Crie um objeto Product com as informações e adicione-o ao dicionário de produtos
-    product = Product(code, name, description, 0, price, min_stock)
-    products[code] = product
+    # Verifique se já existe um produto com o mesmo código
+    if code in products:
+        response = "Já existe um produto com o código fornecido."
+    else:
+        name = data.get('name')
+        description = data.get('description')
+        price = data.get('price')
+        minStock = data.get('minStock')
 
-    response = "Produto registrado com sucesso"
+        # Crie um objeto Product com as informações e adicione-o ao dicionário de produtos
+        product = Product(code, name, description, 0, price, minStock)
+        products[code] = product
+
+        response = "Produto registrado com sucesso"
 
     return jsonify({"message": response})
-
 
 
 @app.route('/api/products/entry', methods=['POST'])
@@ -145,7 +149,6 @@ def get_users():
         username_list.append(user)
 
     return jsonify(username_list)
-
 
 
 

@@ -106,8 +106,7 @@ productRegistrationForm.addEventListener('submit', (event) => {
             price,
         };
 
-        // Adicione o produto à tabela
-        addProductToTable(product);
+        
 
         // Enviar solicitação de registro de usuário para o servidor
         fetch('http://127.0.0.1:5000/api/products/register', {
@@ -119,6 +118,8 @@ productRegistrationForm.addEventListener('submit', (event) => {
         })
         .then((response) => response.json())
         .then((data) => {
+            // Adicione o produto à tabela
+            if(data.message === "Produto registrado com sucesso") addProductToTable(product);
             console.log(data.message);
         })
         .catch((error) => {
@@ -137,6 +138,8 @@ productRegistrationForm.addEventListener('submit', (event) => {
 
 // Função para adicionar um produto à tabela
 function addProductToTable(product) {
+    console.log(product)
+
     const productList = document.getElementById('product-list');
     const newRow = productList.insertRow();
     // Coluna do Código
