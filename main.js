@@ -255,12 +255,28 @@ const relatorio_popup = document.getElementById('relatorio');
 const relatorioButton = document.getElementById('relatorio_button');
 
 relatorioButton.addEventListener('click', () => {
+
     if (relatorio_popup.style.display === 'none') {
         relatorio_popup.style.display = 'flex';
     } else {
         relatorio_popup.style.display = 'none';
     }
 })
+
+
+const relatorioUnsold = document.getElementById('relatorio_unsold');
+const relatorioUnsoldButton = document.getElementById('relatorio_unsold_button');
+
+relatorioUnsoldButton.addEventListener('click', () => {
+    console.log('unsold')
+    console.log(relatorioUnsold)
+    if (relatorioUnsold.style.display === 'none') {
+        relatorioUnsold.style.display = 'flex';
+    } else {
+        relatorioUnsold.style.display = 'none';
+    }
+})
+
 
 
 const tabelaProdutos = document.getElementById('tabela-produtos')
@@ -327,6 +343,56 @@ relatorioForm.addEventListener('submit', (event) => {
         alert('Por favor, insira um valor válido para os minutos.');
     }
 });
+
+
+
+const unsoldReportTable = document.getElementById('unsold-report-table');
+const unsoldReportBody = document.getElementById('unsold-report-body');
+
+const notSoldReportForm = document.getElementById('not-sold-report-form');
+
+notSoldReportForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const minutesInput = document.getElementById('not-sold-minutes');
+    const minutes = parseInt(minutesInput.value, 10);
+
+    if (!isNaN(minutes) && minutes >= 0) {
+        fetch(`http://127.0.0.1:5000/api/reports/not-sold-since/${minutes}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            // Limpar o conteúdo da tabela antes de adicionar os novos dados
+            unsoldReportBody.innerHTML = '';
+
+            data.forEach((productInfo) => {
+                const row = unsoldReportTable.insertRow();
+                row.innerHTML = `
+                    <td>${productInfo.code}</td>
+                    <td>${productInfo.name}</td>
+                `;
+            });
+
+            unsoldReportTable.style.removeProperty('display');
+            console.log('Relatório de Produtos Não Vendidos:', data);
+        })
+        .catch((error) => {
+            console.error('Erro ao buscar o relatório de produtos não vendidos:', error);
+        });
+    } else {
+        alert('Por favor, insira um valor válido para os minutos.');
+    }
+});
+
+
+
+
+
+
 
 
 

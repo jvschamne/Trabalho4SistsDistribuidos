@@ -21,7 +21,7 @@ body {
     background-color: red;
 }
 
-#relatorio {
+#relatorio, #relatorio_unsold {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -73,7 +73,7 @@ tbody tr td {
 }
 
 th, tr, td {
-    width: 200px; /* Remova a largura fixa para todas as células */
+    width: 50px; /* Remova a largura fixa para todas as células */
     border: 1px solid black;
     text-align: center;
 }

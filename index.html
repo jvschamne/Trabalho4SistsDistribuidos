@@ -20,7 +20,8 @@
 
     <div class="botoes">
         <button type="button" id="add_product_button">Adicionar produtos</button>
-        <button type="button" id="relatorio_button">Relatório</button>
+        <button type="button" id="relatorio_button">Relatório de Movimentações</button>
+        <button type="button" id="relatorio_unsold_button">Relatório não vendidos</button>
         <button type="button" id="table_button">Mostrar Estoque</button>
     </div>
 
@@ -75,12 +76,30 @@
                 <tbody id="report-body">
                     <!-- Aqui serão adicionadas as linhas da tabela do relatório -->
                 </tbody>
-            </table>
+            </table> 
         </div>
     </div>
-
+    <div id="relatorio_unsold" style="display: none;">
+        <form id="not-sold-report-form">
+            <h2>Gerar Relatório</h2>
+            <label for="not-sold-minutes">Produtos Não Vendidos nos Últimos Minutos:</label>
+            <input type="number" id="not-sold-minutes" placeholder="Minutos" required>
+            <button type="submit">Gerar Relatório</button>
+        </form>
+        <h2>Relatório Unsold</h2>
+        <table id="unsold-report-table">
+            <thead>
+                <tr>
+                    <th>Código do Produto</th>
+                    <th>Nome do Produto</th>
+                </tr>
+            </thead>
+            <tbody id="unsold-report-body">
+                <!-- Aqui serão adicionadas as linhas da tabela do relatório de produtos não vendidos -->
+            </tbody>
+        </table>
+    </div>
     
-
     <script src="main.js"></script>
     </body>
 </html>

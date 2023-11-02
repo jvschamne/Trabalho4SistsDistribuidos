@@ -197,6 +197,31 @@ def get_movement_reports(date):
     return jsonify(fluxoMov)
 
 
+@app.route('/api/reports/not-sold-since/<int:date>', methods=['GET'])
+def get_not_sold_reports(date):
+
+    print(date)
+    current_time = datetime.datetime.now()
+    time_ago = current_time - datetime.timedelta(minutes=date)
+
+    unsold_products = []
+
+    for product in products.values():
+        has_exit_movements = any(
+            movement_time >= time_ago and movement_type == "saída"
+            for movement_time, movement_type, _ in product.movements
+        )
+
+
+        if not has_exit_movements:
+            unsold_products.append({
+                 "code": product.code,
+                 "name": product.name
+                    })
+
+    return jsonify(unsold_products)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
