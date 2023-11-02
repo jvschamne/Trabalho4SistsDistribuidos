@@ -142,6 +142,8 @@ function addProductToTable(product) {
 
     const productList = document.getElementById('product-list');
     const newRow = productList.insertRow();
+    newRow.id = product.code; //  ID da linha igual ao código do produto
+
     // Coluna do Código
     const codeCell = newRow.insertCell(0);
     codeCell.textContent = product.code;
@@ -159,11 +161,7 @@ function addProductToTable(product) {
     priceCell.textContent = product.price;
     // Coluna da Quantidade
     const quantityCell = newRow.insertCell(5);
-    const quantityInput = document.createElement('input');
-    quantityInput.type = 'number';
-    quantityInput.min = 0;
-    quantityInput.value = 0; // Defina o valor inicial como 0
-    quantityCell.appendChild(quantityInput);
+    quantityCell.textContent = product.quantity
 
     // Coluna das Ações
     const actionsCell = newRow.insertCell(6);
@@ -171,21 +169,75 @@ function addProductToTable(product) {
     addButton.textContent = 'Adicionar';
     const subtractButton = document.createElement('button');
     subtractButton.textContent = 'Subtrair';
+
+
+    const quantityInput = document.createElement('input');
+    quantityInput.type = 'number';
+    quantityInput.min = 0;
+    quantityInput.value = product.quantity || 0; // Define o valor inicial como a quantidade do produto ou 0
+
     actionsCell.appendChild(quantityInput);
     actionsCell.appendChild(addButton);
     actionsCell.appendChild(subtractButton);
 
     // Manipuladores de eventos para os botões de adicionar e subtrair
     addButton.addEventListener('click', () => {
-        // Implemente a lógica para adicionar itens aqui
         const quantityToAdd = parseInt(quantityInput.value, 10);
-        // Atualize a exibição da quantidade atual (você precisa implementar a lógica)
+        
+        // Obtém o ID da linha atual
+        const productId = newRow.id; // newRow é a linha atual que foi definida com o ID
+        
+        // Verifique se o productId não está vazio
+        if (productId) {
+            // Enviar solicitação de adicionar produto para o servidor com o ID e a quantidade
+            fetch(`http://127.0.0.1:5000/api/products/entry/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ quantityToAdd }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data.message);
+            })
+            .catch((error) => {
+                console.error('Erro ao adicionar produto:', error);
+            });
+        } else {
+            console.error('ID da linha não encontrado.');
+        }
     });
+
     subtractButton.addEventListener('click', () => {
-        // Implemente a lógica para subtrair itens aqui
         const quantityToSubtract = parseInt(quantityInput.value, 10);
-        // Atualize a exibição da quantidade atual (você precisa implementar a lógica)
+        
+        // Obtém o ID da linha atual
+        const productId = newRow.id; // newRow é a linha atual que foi definida com o ID
+        
+        // Verifique se o productId não está vazio
+        if (productId) {
+            // Enviar solicitação de subtrair produto do servidor com o ID e a quantidade
+            fetch(`http://127.0.0.1:5000/api/products/exit/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ quantityToSubtract }), // Use um valor negativo para subtrair
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data.message);
+            })
+            .catch((error) => {
+                console.error('Erro ao subtrair produto:', error);
+            });
+        } else {
+            console.error('ID da linha não encontrado.');
+        }
     });
+    
+    
 }
 
 

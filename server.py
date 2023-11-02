@@ -116,21 +116,41 @@ def register_product():
     return jsonify({"message": response})
 
 
-@app.route('/api/products/entry', methods=['POST'])
-def record_entry():
+@app.route('/api/products/entry/<string:productId>', methods=['POST'])
+def record_entry(productId):
     data = request.json
-    code = data.get('code')
-    quantity = data.get('quantity')
+    quantity = data.get('quantityToAdd')
         
     response = ""
-    if code in products:
+    if productId in products:
         response = "Produto adicionado ao estoque."
-        product = products[code]
+        product = products[productId]
         product.add_entry(quantity)
     else:
         response = "Não há nenhum produto com esse código"
        
     return jsonify({"message": response})
+
+
+@app.route('/api/products/exit/<string:productId>', methods=['POST'])
+def record_exit(productId):
+    data = request.json
+    quantityToSubtract = data.get('quantityToSubtract')
+        
+    response = ""
+    if productId in products:
+        product = products[productId]
+        
+        if quantityToSubtract > 0 and quantityToSubtract <= product.quantity:
+            product.add_exit(quantityToSubtract)
+            response = "Produto removido do estoque."
+        else:
+            response = "Quantidade inválida para remoção."
+    else:
+        response = "Produto não encontrado."
+
+    return jsonify({"message": response})
+
 
 
 @app.route('/api/products', methods=['GET'])
