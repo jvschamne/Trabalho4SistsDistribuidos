@@ -211,14 +211,17 @@ def get_not_sold_reports(date):
 
 
     print(unsold_products)
+
+
     return jsonify(unsold_products)
 
 
-def check_unsold_products():
+def check_unsold_lowstock():
     current_time = datetime.datetime.now()
     time_ago = current_time - datetime.timedelta(minutes=2)
 
     unsold_products = []
+    low_stock_products = []
 
     for product in products.values():
         has_exit_movements = any(
@@ -233,15 +236,29 @@ def check_unsold_products():
                  "name": product.name
                     })
 
-    return unsold_products
+        if product.quantity < product.minStock:
+            low_stock_products.append({
+                 "code": product.code,
+                 "name": product.name
+                    })
 
+
+    print(unsold_products)
+    print(low_stock_products)
+
+    combined_data = {
+        "unsold_products": unsold_products,
+        "low_stock_products": low_stock_products
+    }
+
+    return combined_data
 
  
 @app.route('/sse')
 def sse_demo():
     def check():
         sleep(30)
-        unsold_products = check_unsold_products()
+        unsold_products = check_unsold_lowstock()
         return "data: {}\n\n".format(json.dumps(unsold_products))
 
     return Response(
