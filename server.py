@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 import json
 from time import sleep
@@ -65,16 +65,6 @@ def stock_system():
     </html>
     """
 
-@app.route('/api/notify', methods=['POST'])
-def notify_clients():
-    data = request.json
-    message = data.get('message')
-    notifications.append(message)
-    for client in clients:
-        client.put(json.dumps({'type': 'notification', 'message': message}))
-
-    return jsonify({"message": "Notificação enviada com sucesso"})
-
 
 # Funcoes do Sistema de gestão de estoque
 @app.route('/api/register', methods=['POST'])
@@ -132,6 +122,22 @@ def record_entry(productId):
     return jsonify({"message": response})
 
 
+
+
+
+
+
+
+# Função para notificar um cliente quando o estoque mínimo é atingido
+def notify_min_stock(client_name, product):
+    message = f"Produto '{product.name}' atingiu o estoque mínimo de {product.minStock}."
+
+    if client_name in clients:
+        client = clients[client_name]
+        client.put(json.dumps({'type': 'notification', 'message': message}))
+
+
+
 @app.route('/api/products/exit/<string:productId>', methods=['POST'])
 def record_exit(productId):
     data = request.json
@@ -148,6 +154,10 @@ def record_exit(productId):
             response = "Quantidade inválida para remoção."
     else:
         response = "Produto não encontrado."
+
+
+    if product.quantity <= product.minStock:
+        notify_replenishment(client, product)
 
     return jsonify({"message": response})
 
