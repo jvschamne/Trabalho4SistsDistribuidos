@@ -1,4 +1,4 @@
-const eventSource = new EventSource('http://127.0.0.1:5000/events');
+const eventSource = new EventSource('http://127.0.0.1:5000/sse');
 
 eventSource.onmessage = function(event) {
     // Manipule eventos recebidos
@@ -257,8 +257,7 @@ const relatorioUnsold = document.getElementById('relatorio_unsold');
 const relatorioUnsoldButton = document.getElementById('relatorio_unsold_button');
 
 relatorioUnsoldButton.addEventListener('click', () => {
-    console.log('unsold')
-    console.log(relatorioUnsold)
+  
     if (relatorioUnsold.style.display === 'none') {
         relatorioUnsold.style.display = 'flex';
     } else {

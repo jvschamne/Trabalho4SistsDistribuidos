@@ -1,10 +1,9 @@
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 import json
-from time import sleep
 import datetime
 from time import sleep
-
+ 
 app = Flask(__name__)
 CORS(app)
 
@@ -47,34 +46,22 @@ class Product:
 class User:
     def __init__(self, name):
         self.name = name
+  
+
+
+def notify_replenishment(product):
+    # Notify all clients that stock is low
+    for client in clients:
+        print(client)
+
+    print(f"Produto '{product.name}' atingiu o estoque mínimo de {product.minStock}.")
  
-
-@app.route('/events')
-def sse():
-    def generate():
-        client = request.environ['wsgi.websocket']
-        clients.append(client)
-
-        while client in clients:
-            time.sleep(1)
-            if client:
-                # Gere eventos de notificação aqui (use a função notify_clients)
-                for code, product in products.items():
-                    if product.quantity <= product.minStock:
-                        notify_replenishment(client, product)
-
-    return Response(generate(), content_type="text/event-stream")
-
-def notify_replenishment(client, product):
-    message = f"Produto '{product.name}' atingiu o estoque mínimo de {product.minStock}."
-    data = json.dumps({'type': 'notification', 'message': message})
-    client.put(data)
 
 @app.route('/api/products/exit/<string:productId>', methods=['POST'])
 def record_exit(productId):
     data = request.json
     quantityToSubtract = data.get('quantityToSubtract')
-
+ 
     response = ""
     if productId in products:
         product = products[productId]
@@ -87,29 +74,13 @@ def record_exit(productId):
 
         if product.quantity <= product.minStock:
             # Notify all clients that stock is low
-            for client in clients:
-                notify_replenishment(client, product)
+            notify_replenishment(product)
 
     else:
         response = "Produto não encontrado."
 
     return jsonify({"message": response})
 
-
-@app.route('/', methods=['GET'])
-def stock_system():
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Stock System</title>
-    </head>
-    <body>
-        <h1>Bem-vindo ao Sistema de Estoque</h1>
-        <p>Este é um exemplo de página HTML retornada diretamente pelo Flask.</p>
-    </body>
-    </html>
-    """
 
 
 # Funcoes do Sistema de gestão de estoque
@@ -168,30 +139,6 @@ def record_entry(productId):
     return jsonify({"message": response})
 
 
-"""@app.route('/api/products/exit/<string:productId>', methods=['POST'])
-def record_exit(productId):
-    data = request.json
-    quantityToSubtract = data.get('quantityToSubtract')
-        
-    response = ""
-    if productId in products:
-        product = products[productId]
-        
-        if quantityToSubtract > 0 and quantityToSubtract <= product.quantity:
-            product.add_exit(quantityToSubtract)
-            response = "Produto removido do estoque."
-        else:
-            response = "Quantidade inválida para remoção."
-    else:
-        response = "Produto não encontrado."
-
-
-    if product.quantity <= product.minStock:
-        notify_replenishment(product)
-
-    return jsonify({"message": response})
-
- """
 @app.route('/api/products', methods=['GET'])
 def get_products():
     product_list = []
@@ -265,6 +212,42 @@ def get_not_sold_reports(date):
 
     print(unsold_products)
     return jsonify(unsold_products)
+
+
+def check_unsold_products():
+    current_time = datetime.datetime.now()
+    time_ago = current_time - datetime.timedelta(minutes=2)
+
+    unsold_products = []
+
+    for product in products.values():
+        has_exit_movements = any(
+            movement_time >= time_ago and movement_type == "saída"
+            for movement_time, movement_type, _ in product.movements
+        )
+
+
+        if not has_exit_movements:
+            unsold_products.append({
+                 "code": product.code,
+                 "name": product.name
+                    })
+
+    return unsold_products
+
+
+ 
+@app.route('/sse')
+def sse_demo():
+    def check():
+        unsold_products = check_unsold_products()
+        yield "data: {}\n\n".format(unsold_products)
+
+    return Response(
+        check(),  # gen_date_time() is an Iterable
+        mimetype='text/event-stream'  # mark as a stream response
+    )
+
 
 
 if __name__ == '__main__':
