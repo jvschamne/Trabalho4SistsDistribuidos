@@ -58,10 +58,17 @@ userRegistrationForm.addEventListener('submit', (event) => {
         userRegistrationForm.style.display = "none";
 
         productRegistrationForm.style.display = "flex";
+
+        const mainContent = document.getElementById('main')
+        mainContent.style.removeProperty('display');
+
+
     })
     .catch((error) => {
         console.error('Erro no registro de usuário:', error);
     });
+
+    fetchClientList()
 });
 
 // Função para buscar a lista de clientes do servidor
@@ -142,6 +149,8 @@ productRegistrationForm.addEventListener('submit', (event) => {
         codeInput.value = '';
         nameInput.value = '';
         priceInput.value = '';
+
+        fetchProductList()
     } else {
         // Exiba uma mensagem de erro se algum campo estiver vazio ou o preço for inválido
         alert('Por favor, preencha todos os campos corretamente.');
@@ -218,6 +227,7 @@ function addProductToTable(product) {
         } else {
             console.error('ID da linha não encontrado.');
         }
+        fetchProductList()
     });
 
     subtractButton.addEventListener('click', () => {
@@ -246,6 +256,7 @@ function addProductToTable(product) {
         } else {
             console.error('ID da linha não encontrado.');
         }
+        fetchProductList()
     });
     
     

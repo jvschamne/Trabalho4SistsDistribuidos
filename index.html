@@ -8,16 +8,20 @@
     <link rel="stylesheet" type="text/css" media="screen" href="style.css">
 </head>
 <body>
-    <!---
-    <h2>Clientes Cadastrados</h2>
-    <ul id="client-list"></ul>-->
-
     <form id="user-registration-form">
         <h2>Cadastro de Usuário</h2>
         <input type="text" id="user-name" placeholder="Nome do usuário" required>
         <button type="submit">Cadastrar</button>
     </form>
-
+    <main id="main" style="display: none;">
+    
+    
+    <div id="client-list-div">
+        <h2>Clientes Cadastrados</h2>
+            <ul id="client-list"></ul>
+    </div>
+    
+    
     <div class="botoes">
         <button type="button" id="add_product_button">Adicionar produtos</button>
         <button type="button" id="relatorio_button">Relatório de Movimentações</button>
@@ -99,6 +103,7 @@
             </tbody>
         </table>
     </div>
+    </main>
     
     <script src="main.js"></script>
     </body>

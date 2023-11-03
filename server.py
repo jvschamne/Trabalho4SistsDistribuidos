@@ -10,8 +10,6 @@ CORS(app)
 users = {}  # Dicionário de usuários (nome do usuário -> objeto do usuário)
 products = {}  # Dicionário de produtos (código do produto -> objeto do produto)
 
-clients = []  # Dicionário de clientes conectados (nome do cliente -> objeto do cliente)
-
 # Representa o produto
 class Product:
     def __init__(self, code, name, description, quantity, price, minStock):
@@ -49,14 +47,6 @@ class User:
   
 
 
-def notify_replenishment(product):
-    # Notify all clients that stock is low
-    for client in clients:
-        print(client)
-
-    print(f"Produto '{product.name}' atingiu o estoque mínimo de {product.minStock}.")
- 
-
 @app.route('/api/products/exit/<string:productId>', methods=['POST'])
 def record_exit(productId):
     data = request.json
@@ -71,10 +61,6 @@ def record_exit(productId):
             response = "Produto removido do estoque."
         else:
             response = "Quantidade inválida para remoção."
-
-        if product.quantity <= product.minStock:
-            # Notify all clients that stock is low
-            notify_replenishment(product)
 
     else:
         response = "Produto não encontrado."
@@ -149,7 +135,6 @@ def get_products():
 
 @app.route('/api/clients', methods=['GET'])
 def get_users():
-    print(users)
     username_list = []
     for user in users:
         username_list.append(user)
@@ -183,14 +168,12 @@ def get_movement_reports(date):
         fluxoMov.append(product_info)
 
 
-    print(fluxoMov)
     return jsonify(fluxoMov)
 
 
 @app.route('/api/reports/not-sold-since/<int:date>', methods=['GET'])
 def get_not_sold_reports(date):
 
-    print(date)
     current_time = datetime.datetime.now()
     time_ago = current_time - datetime.timedelta(minutes=date)
 
@@ -208,9 +191,6 @@ def get_not_sold_reports(date):
                  "code": product.code,
                  "name": product.name
                     })
-
-
-    print(unsold_products)
 
 
     return jsonify(unsold_products)
@@ -241,10 +221,6 @@ def check_unsold_lowstock():
                  "code": product.code,
                  "name": product.name
                     })
-
-
-    print(unsold_products)
-    print(low_stock_products)
 
     combined_data = {
         "unsold_products": unsold_products,
