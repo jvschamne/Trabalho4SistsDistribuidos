@@ -115,7 +115,7 @@ def register_product():
         minStock = data.get('minStock')
 
         # Crie um objeto Product com as informações e adicione-o ao dicionário de produtos
-        product = Product(code, name, description, 0, price, minStock)
+        product = Product(code, name, description, minStock, price, minStock)
         products[code] = product
 
         response = "Produto registrado com sucesso"
@@ -240,14 +240,14 @@ def check_unsold_products():
 @app.route('/sse')
 def sse_demo():
     def check():
+        sleep(30)
         unsold_products = check_unsold_products()
-        yield "data: {}\n\n".format(unsold_products)
+        return "data: {}\n\n".format(json.dumps(unsold_products))
 
     return Response(
-        check(),  # gen_date_time() is an Iterable
-        mimetype='text/event-stream'  # mark as a stream response
+        check(),
+        mimetype='text/event-stream'
     )
-
 
 
 if __name__ == '__main__':

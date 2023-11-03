@@ -2,7 +2,19 @@ const eventSource = new EventSource('http://127.0.0.1:5000/sse');
 
 eventSource.onmessage = function(event) {
     // Manipule eventos recebidos
-    console.log(event.data)
+    console.log(event.data[0]);
+
+    // Converta os dados recebidos de uma string JSON para um array de objetos
+    const unsoldProducts = JSON.parse(event.data);
+    console.log(unsoldProducts)
+    // Construa a mensagem a ser exibida
+
+    let mensagem = "Produtos não vendidos:\n";
+    unsoldProducts.forEach(prod => {
+            mensagem += `Código: ${prod.code}, Nome: ${prod.name}\n`;
+    });
+
+    alert(mensagem);
 };
 
 eventSource.onerror = function(error) {
