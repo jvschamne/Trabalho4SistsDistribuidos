@@ -194,6 +194,9 @@ def get_movement_reports(date):
                             })
 
         fluxoMov.append(product_info)
+
+
+    print(fluxoMov)
     return jsonify(fluxoMov)
 
 
@@ -219,6 +222,8 @@ def get_not_sold_reports(date):
                  "name": product.name
                     })
 
+
+    print(unsold_products)
     return jsonify(unsold_products)
 
 

@@ -301,6 +301,11 @@ relatorioForm.addEventListener('submit', (event) => {
 
     // Verifique se os minutos são válidos
     if (!isNaN(minutes) && minutes >= 0) {
+        const reportTable = document.getElementById('report-table');
+        
+        // Clear the previous report data
+        reportTable.innerHTML = '';
+
         // Enviar solicitação de relatório para o servidor
         fetch(`http://127.0.0.1:5000/api/reports/movements/${minutes}`, {
             method: 'GET',
@@ -310,13 +315,8 @@ relatorioForm.addEventListener('submit', (event) => {
         })
         .then((response) => response.json())
         .then((data) => {
-            const reportTable = document.getElementById('report-table');
-            const reportBody = document.getElementById('report-body');
-        
-            // Limpar o conteúdo da tabela antes de adicionar os novos dados
-            reportBody.innerHTML = '';
-        
             data.forEach((productInfo) => {
+                console.log(productInfo)
                 const row = reportTable.insertRow();
                 row.innerHTML = `
                     <td>${productInfo.code}</td>
@@ -358,6 +358,9 @@ notSoldReportForm.addEventListener('submit', (event) => {
     const minutes = parseInt(minutesInput.value, 10);
 
     if (!isNaN(minutes) && minutes >= 0) {
+        unsoldReportTable.innerHTML = ''
+
+
         fetch(`http://127.0.0.1:5000/api/reports/not-sold-since/${minutes}`, {
             method: 'GET',
             headers: {
@@ -370,6 +373,7 @@ notSoldReportForm.addEventListener('submit', (event) => {
             unsoldReportBody.innerHTML = '';
 
             data.forEach((productInfo) => {
+                console.log(productInfo)
                 const row = unsoldReportTable.insertRow();
                 row.innerHTML = `
                     <td>${productInfo.code}</td>
