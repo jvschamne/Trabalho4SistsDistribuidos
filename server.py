@@ -3,16 +3,15 @@ from flask_cors import CORS
 import json
 from time import sleep
 import datetime
+from time import sleep
 
 app = Flask(__name__)
 CORS(app)
 
 users = {}  # Dicionário de usuários (nome do usuário -> objeto do usuário)
 products = {}  # Dicionário de produtos (código do produto -> objeto do produto)
-clients = {}  # Dicionário de clientes (nome do cliente -> objeto do cliente)"""
 
-# Lista de notificações
-notifications = []
+clients = []  # Dicionário de clientes conectados (nome do cliente -> objeto do cliente)
 
 # Representa o produto
 class Product:
@@ -48,6 +47,34 @@ class Product:
 class User:
     def __init__(self, name):
         self.name = name
+ 
+
+
+# Rota para streaming de eventos
+@app.route('/events')
+def sse():
+    def generate():
+        clients.append("Cliente Conectado")
+        try:
+            for i in range(1, 6):
+                message = f"Mensagem {i}"
+                yield f"data: {message}\n\n"
+                sleep(1)
+        except GeneratorExit:
+            # Remova o cliente da lista quando a conexão for fechada
+            clients.remove("Cliente Conectado")
+
+    return Response(generate(), content_type='text/event-stream')
+
+
+# Função para notificar um cliente quando o estoque mínimo é atingido
+def notify_replenishment(product):
+    message = f"Produto '{product.name}' atingiu o estoque mínimo de {product.minStock}."
+
+    for client in clients:
+        client.put(json.dumps({'type': 'notification', 'message': message}))
+
+
 
 
 @app.route('/', methods=['GET'])
@@ -81,7 +108,7 @@ def register_user():
     
     return jsonify({"message": response})
 
-    
+
 @app.route('/api/products/register', methods=['POST'])
 def register_product():
     data = request.json
@@ -122,22 +149,6 @@ def record_entry(productId):
     return jsonify({"message": response})
 
 
-
-
-
-
-
-
-# Função para notificar um cliente quando o estoque mínimo é atingido
-def notify_min_stock(client_name, product):
-    message = f"Produto '{product.name}' atingiu o estoque mínimo de {product.minStock}."
-
-    if client_name in clients:
-        client = clients[client_name]
-        client.put(json.dumps({'type': 'notification', 'message': message}))
-
-
-
 @app.route('/api/products/exit/<string:productId>', methods=['POST'])
 def record_exit(productId):
     data = request.json
@@ -157,7 +168,7 @@ def record_exit(productId):
 
 
     if product.quantity <= product.minStock:
-        notify_replenishment(client, product)
+        notify_replenishment(product)
 
     return jsonify({"message": response})
 
@@ -237,8 +248,6 @@ def get_not_sold_reports(date):
     return jsonify(unsold_products)
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)
     sleep(3000)
-    notifications.append("quarquercoisa")

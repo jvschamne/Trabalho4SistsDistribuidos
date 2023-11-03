@@ -1,29 +1,19 @@
-const eventSource = new EventSource('http://127.0.0.1:5000/');
+const eventSource = new EventSource('http://127.0.0.1:5000/events');
 
-eventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    if (data.type === 'notification') {
-        // Notificação do servidor
-        const notification = data.message;
-        console.log('Notificação do servidor:', notification);
-        const notificationList = document.getElementById('notification-list');
-        const listItem = document.createElement('li');
-        listItem.textContent = notification;
-        notificationList.appendChild(listItem);
-
-    } else if (data.type === 'clientsUpdate') {
-        // Atualização da lista de clientes
-        const clients = data.clients;
-        const clientList = document.getElementById('client-list');
-        clientList.innerHTML = ''; // Limpar a lista existente
-        clients.forEach((client) => {
-            const listItem = document.createElement('li');
-            listItem.textContent = client;
-            clientList.appendChild(listItem);
-        });
-    }
+eventSource.onmessage = function(event) {
+    // Manipule eventos recebidos
+    console.log(event.data)
 };
+
+eventSource.onerror = function(error) {
+    // Trate erros de conexão
+    console.error('Erro na conexão SSE:', error);
+};
+
+
+ 
+
+
 
 const userRegistrationForm = document.getElementById('user-registration-form');
 userRegistrationForm.addEventListener('submit', (event) => {
@@ -138,7 +128,6 @@ productRegistrationForm.addEventListener('submit', (event) => {
 
 // Função para adicionar um produto à tabela
 function addProductToTable(product) {
-    console.log(product)
 
     const productList = document.getElementById('product-list');
     const newRow = productList.insertRow();
