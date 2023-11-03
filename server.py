@@ -49,32 +49,51 @@ class User:
         self.name = name
  
 
-
-# Rota para streaming de eventos
 @app.route('/events')
 def sse():
     def generate():
-        clients.append("Cliente Conectado")
-        try:
-            for i in range(1, 6):
-                message = f"Mensagem {i}"
-                yield f"data: {message}\n\n"
-                sleep(1)
-        except GeneratorExit:
-            # Remova o cliente da lista quando a conexão for fechada
-            clients.remove("Cliente Conectado")
+        client = request.environ['wsgi.websocket']
+        clients.append(client)
 
-    return Response(generate(), content_type='text/event-stream')
+        while client in clients:
+            time.sleep(1)
+            if client:
+                # Gere eventos de notificação aqui (use a função notify_clients)
+                for code, product in products.items():
+                    if product.quantity <= product.minStock:
+                        notify_replenishment(client, product)
 
+    return Response(generate(), content_type="text/event-stream")
 
-# Função para notificar um cliente quando o estoque mínimo é atingido
-def notify_replenishment(product):
+def notify_replenishment(client, product):
     message = f"Produto '{product.name}' atingiu o estoque mínimo de {product.minStock}."
+    data = json.dumps({'type': 'notification', 'message': message})
+    client.put(data)
 
-    for client in clients:
-        client.put(json.dumps({'type': 'notification', 'message': message}))
+@app.route('/api/products/exit/<string:productId>', methods=['POST'])
+def record_exit(productId):
+    data = request.json
+    quantityToSubtract = data.get('quantityToSubtract')
 
+    response = ""
+    if productId in products:
+        product = products[productId]
 
+        if quantityToSubtract > 0 and quantityToSubtract <= product.quantity:
+            product.add_exit(quantityToSubtract)
+            response = "Produto removido do estoque."
+        else:
+            response = "Quantidade inválida para remoção."
+
+        if product.quantity <= product.minStock:
+            # Notify all clients that stock is low
+            for client in clients:
+                notify_replenishment(client, product)
+
+    else:
+        response = "Produto não encontrado."
+
+    return jsonify({"message": response})
 
 
 @app.route('/', methods=['GET'])
@@ -149,7 +168,7 @@ def record_entry(productId):
     return jsonify({"message": response})
 
 
-@app.route('/api/products/exit/<string:productId>', methods=['POST'])
+"""@app.route('/api/products/exit/<string:productId>', methods=['POST'])
 def record_exit(productId):
     data = request.json
     quantityToSubtract = data.get('quantityToSubtract')
@@ -172,7 +191,7 @@ def record_exit(productId):
 
     return jsonify({"message": response})
 
- 
+ """
 @app.route('/api/products', methods=['GET'])
 def get_products():
     product_list = []
